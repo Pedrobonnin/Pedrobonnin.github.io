@@ -1,0 +1,115 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  }
+  
+  nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #333;
+  padding: 1rem;
+  }
+  
+  button {
+  background-color: #007BFF;
+  border: none;
+  border-radius: 5px;
+  color: #FFF;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  }
+  
+  button:hover {
+  background-color: #0056B3;
+  }
+  
+  #search {
+  padding: 0.5rem;
+  }
+
+  /* Establece el ancho máximo del contenedor */
+  .movieContainer {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .movie {
+    display: inline-block;
+    margin: 1rem;
+    position: relative;
+    height: 350px;
+    min-width: 250px;
+  }
+
+  
+  .movie-synopsis {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .more { 
+    color: #007bff;
+    cursor: pointer;
+  }
+  
+  .movie img {
+    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  
+  
+  
+  .movie:hover .movie-info {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    flex-direction: column;
+    z-index: 1; /* Agrega un z-index alto */
+  }
+  
+  .movie-info img {
+    margin: 10px;
+    max-width: 90%;
+    height: auto;
+  }
+  
+  .movie-info {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 5px;
+    color: #fff;
+    display: none;
+    top: 0;
+    width: 100px;
+    min-height: 100%; /* Cambia a min-height */
+    height: 100%;
+    transition: width 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+    z-index: 1; /* Agrega un z-index alto */
+  }
+  
+  .movie-info.abierto {
+    background-color: rgba(0, 0, 0, 0.918);
+    width: 300%;
+    min-height: 100%; /* Cambia a min-height */
+    height: auto;
+    z-index: 2; /* Agrega un z-index más alto */
+  }
+  
+  .movie-info h2 {
+    margin: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .movie-info p {
+    margin: 1rem;
+    font-size: 1rem;
+  }
