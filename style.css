@@ -2,24 +2,87 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  min-width: 20px;
   }
-  
-  nav {
+
+/* slider carusel*/
+#carruzelContainer{
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  justify-content: center;
+}
+.slider {
+  width: 60%;
+  min-width: 253px;
+  overflow: hidden;
+}
+
+.slider ul {
+  padding: 0;
+  display: flex;
+  width: 400%; /* reducimos el ancho para reducir la velocidad */
+  animation: cambio 30s infinite alternate linear; /* aumentamos la duración de la animación */
+}
+
+.slider li {
+  width: 80%; /* cambiamos el ancho para adaptarlo al nuevo ancho de la lista */
+  list-style: none;
+  text-align: center;
+}
+
+.slider img {
+  border-radius: 25px;
+  width: 100%; /* Agrega esta línea para que la imagen se ajuste al ancho del contenedor li */
+  height: 100%;
+  object-fit: cover; /* ajusta la imagen al contenedor*/
+}
+
+img {
+  border-radius: 50%;
+  box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.5);
+}
+
+
+@keyframes cambio {
+  0%  {margin-left: -0%;}
+  20% {margin-left: -0%;} /* reducimos el valor para adaptarlo al nuevo ancho de la lista */
+
+  25%  {margin-left: -100%;}
+  45% {margin-left: -100%;} /* reducimos el valor para adaptarlo al nuevo ancho de la lista */
+
+  50%  {margin-left: -200%;}
+  70% {margin-left: -200%;} /* reducimos el valor para adaptarlo al nuevo ancho de la lista */
+
+  75%  {margin-left: -300%;}
+  100% {margin-left: -300%;} /* reducimos el valor para adaptarlo al nuevo ancho de la lista */
+
+}
+
+/*-------------------- */
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 20px;
   background-color: #333;
-  padding: 1rem;
-  }
-  
-  button {
-  background-color: #007BFF;
-  border: none;
+  color: #fff;
+}
+
+.menu{
+  margin: auto;
+  text-align: center;
+}
+
+button { 
+  margin: 2px;
+  min-width: 240px;
   border-radius: 5px;
+  font-size: 1rem;
+  background-color: #007BFF;
+  padding: 0.5rem 1rem;
+  border: none;
   color: #FFF;
   cursor: pointer;
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
   }
   
   button:hover {
@@ -27,22 +90,33 @@ body {
   }
   
   #search {
-  padding: 0.5rem;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  min-width: 210px;
+  margin: 2px;
+  padding: 0.5rem 1rem;
   }
 
   /* Establece el ancho máximo del contenedor */
-  .movieContainer {
+  #movieContainer {
+    text-align: center;
     position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 100%;
+    justify-self: center;
+    align-items: center;
+    margin: 20px; /* Agrega un margen de 20 píxeles alrededor de la sección */
+    margin-top: 20px; /* Agrega un margen superior para separar la sección de las paredes del body */
+    margin-bottom: 20px; /* Agrega un margen inferior para separar la sección de las paredes del body */
   }
   
   .movie {
+    align-items: center;
+    justify-self: center;
     display: inline-block;
-    margin: 1rem;
     position: relative;
     height: 350px;
-    min-width: 250px;
+    min-width: 50px;
   }
 
   
@@ -58,8 +132,8 @@ body {
   }
   
   .movie img {
-    border-radius: 5px;
-    width: 100%;
+    border-radius: 10px;
+    width: 250px;
     height: 100%;
     object-fit: cover;
   }
@@ -96,12 +170,18 @@ body {
     z-index: 1; /* Agrega un z-index alto */
   }
   
+
   .movie-info.abierto {
     background-color: rgba(0, 0, 0, 0.918);
     width: 300%;
     min-height: 100%; /* Cambia a min-height */
     height: auto;
     z-index: 2; /* Agrega un z-index más alto */
+  }
+
+  .overview {
+    white-space: pre-wrap;
+    word-wrap: break-word;
   }
   
   .movie-info h2 {
