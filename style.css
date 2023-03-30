@@ -5,7 +5,7 @@ body {
   min-width: 20px;
   }
 
-/* slider carusel*/
+/* slider carrusel*/
 #carruzelContainer{
   display: flex;
   justify-content: center;
@@ -34,11 +34,6 @@ body {
   width: 100%; /* Agrega esta línea para que la imagen se ajuste al ancho del contenedor li */
   height: 100%;
   object-fit: cover; /* ajusta la imagen al contenedor*/
-}
-
-img {
-  border-radius: 50%;
-  box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.5);
 }
 
 
