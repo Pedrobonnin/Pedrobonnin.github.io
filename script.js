@@ -39,15 +39,22 @@ async function fetchHighestRatedMovies(section) {
   return movies.slice(0, 4)      // devolver las 4 películas con la calificación más alta
   .map(movie => ({
     ...movie,
-    backdrop_path: `${IMAGE_BASE_URL}original${movie.backdrop_path}`
-    
+    backdrop_path: `${IMAGE_BASE_URL}original${movie.backdrop_path}`,
+    backdrop_path_small: `${IMAGE_BASE_URL}w500${movie.backdrop_path}`
   }));
   }
 
 homeButton.addEventListener('click', async () => {
   const movies = await fetchHighestRatedMovies('trending/movie/week');
   const slider = document.querySelector('.slider ul');
-  slider.innerHTML = movies.map(movie => `<li><img src="${movie.backdrop_path}" alt="${movie.title}"></li>`).join('');
+  slider.innerHTML = movies.map(movie =>  `
+  <li>
+    <picture>
+      <source srcset="${movie.backdrop_path_small}" alt="${movie.title}" media="(max-width:768px)"></source>
+      <img src="${movie.backdrop_path}" alt="${movie.title}">
+    </picture>
+  </li>`)
+  .join('');
   fetchMovies('trending/movie/week');
 });
 
@@ -55,21 +62,42 @@ homeButton.addEventListener('click', async () => {
 recommendedButton.addEventListener('click', async () => {
   const movies = await fetchHighestRatedMovies('movie/top_rated');
   const slider = document.querySelector('.slider ul');
-  slider.innerHTML = movies.map(movie => `<li><img src="${movie.backdrop_path}" alt="${movie.title}"></li>`).join('');
+  slider.innerHTML = movies.map(movie => `
+  <li>
+    <picture>
+      <source srcset="${movie.backdrop_path_small}" alt="${movie.title}" media="(max-width:768px)"></source>
+      <img src="${movie.backdrop_path}" alt="${movie.title}">
+    </picture>
+  </li>`)
+  .join('');
   fetchMovies('movie/top_rated');
 });
 
 popularButton.addEventListener('click', async () => {
   const movies = await fetchHighestRatedMovies('movie/popular');
   const slider = document.querySelector('.slider ul');
-  slider.innerHTML = movies.map(movie => `<li><img src="${movie.backdrop_path}" alt="${movie.title}"></li>`).join('');
+  slider.innerHTML = movies.map(movie => `
+    <li>
+      <picture>
+        <source srcset="${movie.backdrop_path_small}" alt="${movie.title}" media="(max-width:768px)"></source>
+        <img src="${movie.backdrop_path}" alt="${movie.title}">
+      </picture>
+    </li>`)
+    .join('');
   fetchMovies('movie/popular');
 });
 
 upcomingButton.addEventListener('click', async () => {
   const movies = await fetchHighestRatedMovies('movie/upcoming');
   const slider = document.querySelector('.slider ul');
-  slider.innerHTML = movies.map(movie => `<li><img src="${movie.backdrop_path}" alt="${movie.title}"></li>`).join('');
+  slider.innerHTML = movies.map(movie => `
+  <li>
+    <picture>
+      <source srcset="${movie.backdrop_path_small}" alt="${movie.title}" media="(max-width:768px)"></source>
+      <img src="${movie.backdrop_path}" alt="${movie.title}">
+    </picture>
+  </li>`)
+  .join('');
   fetchMovies('movie/upcoming');
 });
 
