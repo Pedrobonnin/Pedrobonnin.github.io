@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Detalles de la película</title>
+    <link rel="stylesheet" href="movie.css">
+  </head>
+  <body>
+    <main>
+        <div id="movie-details"></div>
+        <!-- telon de fondo -->
+      </main>
+    <main id="movieContainer">
+        <!-- Aca se cargan los datos de la pelicula -->
+    </main>
+
+  <script src="script.js"></script>
+  <script>
+      const movieDetailsContainer = document.getElementById('movie-details');
+      const urlParams = new URLSearchParams(window.location.search);
+      const movieId = urlParams.get('id');
+      console.log("movieHD",movieId)
+      if (movieId) {
+      displayMovieDetails(movieId);
+      }
+  </script>  
+  
+</body>
+</html>

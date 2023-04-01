@@ -1,11 +1,13 @@
 body {
-  font-family: Arial, sans-serif;
+
   margin: 0;
   padding: 0;
   min-width: 20px;
+  font-size: 16px;
+  font-family: 'Roboto Condensed',  sans-serif;
   }
 
-/* slider carrusel*/
+/* slider carusel*/
 #carruzelContainer{
   display: flex;
   justify-content: center;
@@ -35,6 +37,7 @@ body {
   height: 100%;
   object-fit: cover; /* ajusta la imagen al contenedor*/
 }
+
 
 
 @keyframes cambio {
@@ -134,8 +137,6 @@ button {
   }
 
   
-  
-  
   .movie:hover .movie-info {
     display: flex;
     position: absolute;
@@ -162,7 +163,6 @@ button {
     transition: width 0.3s ease-in-out;
     position: relative;
     overflow: hidden;
-    z-index: 1; /* Agrega un z-index alto */
   }
   
 
@@ -171,7 +171,6 @@ button {
     width: 300%;
     min-height: 100%; /* Cambia a min-height */
     height: auto;
-    z-index: 2; /* Agrega un z-index más alto */
   }
 
   .overview {
@@ -188,3 +187,4 @@ button {
     margin: 1rem;
     font-size: 1rem;
   }
+

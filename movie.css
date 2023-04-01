@@ -1,0 +1,110 @@
+body {
+    font-family: 'Roboto Condensed',  sans-serif ;
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+  }
+
+#backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center center;
+    z-index: -1;
+    filter: brightness(0.3);
+    transition: 24s ease-in-out;
+}
+
+main {
+    max-width: 75em;
+    margin: 1.25em;
+    display: flex;
+    height: 100%;
+    width: 100%;
+  }
+  
+.movie-container {
+    margin-right: 1.25em;
+    display: grid;
+    grid-template-columns: 0.9fr 2fr;
+}
+
+.poster-container {
+    border-radius: .3125rem;
+    position: relative;
+    min-width: 23rem;
+    min-height: 34.7675rem; 
+    max-width: 25rem;
+    max-height: 37.5rem;
+}
+
+
+.imgPoster {
+    filter: brightness(0.9);
+    border-radius: .3125rem;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.metadata-container {
+    height: auto;
+    padding: 1.25em;
+    background-color: rgba(0, 0, 0, 0.527);
+    border-radius: 5px;
+    color: #fff;
+    margin-left: 20px; /* Agregar un margen izquierdo de 20px */
+    margin-right: 20px; /* Agregar un margen derecho de 20px */
+    margin-top: 20px; /* Agregar un margen superior de 20px */
+    margin-bottom: 20px; /* Agregar un margen inferior de 20px */
+    flex: 1;
+}
+
+p {
+    line-height: 1.5;
+    margin-bottom: 1.25em;
+}
+
+p:first-of-type {
+    margin-top: 0;
+}
+
+p:last-of-type {
+    margin-bottom: 0;
+}
+
+@media (max-width: 48em) {
+    body{
+        font-size: 16px;
+    }
+    .movie-container {
+        grid-template-columns: 1fr;
+    }
+    .metadata-container {
+      margin-right: 1.25em; /* Agregar un margen derecho de 20px */
+      margin-left: 0px; /* Agregar un margen izquierdo de 0px */
+      order: 1; /* Cambiar el orden de la metadata para que aparezca después del poster */
+    }
+    .poster-container {
+      margin-right: 1.25em; /* Agregar un margen derecho de 20px */
+      margin-bottom: 1.25em; /* Agregar un margen inferior para separar el poster de la metadata */
+      min-width: 4.375em;
+      min-height: 12.5em; 
+      
+    }
+    .imgPoster {
+      max-width: 100%; /* Establecer el ancho máximo de la imagen del poster en el 100% */
+    }
+  }
+
+@media (max-width: 30em) {
+    .metadata-container {
+        padding: .625em; /* Reducir el tamaño del padding de la metadata */
+        margin-top: .625em; /* Agregar un margen superior de 10px */
+        margin-bottom: .625em; /* Agregar un margen inferior de 10px */
+    }
+}
+  
