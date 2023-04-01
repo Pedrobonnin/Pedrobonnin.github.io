@@ -179,15 +179,27 @@ async function displayMovieDetails(movieId) {
   const { poster_path: urlImg, backdrop_path: urlBackdrop, title, overview, runtime, genres, images } = movieDetails;
 
   const genresNames = genres.map((genre) => genre.name).join(', ');
-  const movieContainer = document.getElementById('movie-details');
+  const movieContainer = document.getElementById('movie-telon');
 
   // Verificar la existencia de la propiedad 'backdrops' en 'images'
-  if (!images.backdrops || images.backdrops.length < 5) {
-    // Si no se pueden cargar las imágenes de fondo, mostrar un mensaje al usuario
+  if (images.backdrops || images.backdrops.length < 1) {
+    // Arreglo de las primeras 5 imágenes de backdrop
+    const backdrops = images.backdrops.slice(0, 5).map(backdrop => `${IMAGE_BASE_URL}original${backdrop.file_path}`);
+    
+    // Crear elementos de imagen ocultos para pre-cargar las imágenes de fondo
+    const backdropImages = backdrops.map((url) => {
+      const img = new Image();
+      img.src = url;
+      return img;
+    });
+    
+    // Esperar a que todas las imágenes se hayan cargado antes de mostrar el telón
+    await Promise.all(backdropImages.map(img => img.decode()));
+    
     movieContainer.innerHTML = `
       <div class="movie-container">
         <div class="poster-container">
-          <picture class="posterMovie">
+          <picture>
             <source srcset="${IMAGE_BASE_URL}w500${urlImg}" alt="${title}" media="(max-width:768px)"></source>
             <img class="imgPoster" src="${IMAGE_BASE_URL}original${urlImg}" alt="${title}">
           </picture>
@@ -199,41 +211,18 @@ async function displayMovieDetails(movieId) {
             <p>Duración: ${runtime} minutos</p>
             <p>Géneros: ${genresNames}</p>
           </section>
-          <p>No se pueden cargar las imágenes de fondo de la película.</p>
         </div>
       </div>
     `;
-    return;
+    
+    const backdropContainer = document.createElement('div');
+    backdropContainer.id = 'backdrop';
+    backdropContainer.style.backgroundImage = `url(${backdrops[0]})`;
+ 
+    document.body.appendChild(backdropContainer);
+    // Verificar si hay suficientes imágenes de fondo para rotar
+    rotateBackdrops(backdrops, 20); 
   }
-
-  // Arreglo de las primeras 5 imágenes de backdrop
-  const backdrops = images.backdrops.slice(0, 5).map(backdrop => `${IMAGE_BASE_URL}original${backdrop.file_path}`);
-
-  movieContainer.innerHTML = `
-    <div class="movie-container">
-      <div class="poster-container">
-        <picture>
-          <source srcset="${IMAGE_BASE_URL}w500${urlImg}" alt="${title}" media="(max-width:768px)"></source>
-          <img class="imgPoster" src="${IMAGE_BASE_URL}original${urlImg}" alt="${title}">
-        </picture>
-      </div>
-      <div class="metadata-container">
-        <h1>${title}</h1>
-        <section>
-          <p>${overview}</p>
-          <p>Duración: ${runtime} minutos</p>
-          <p>Géneros: ${genresNames}</p>
-        </section>
-      </div>
-    </div>
-  `;
-  
-  const backdropContainer = document.createElement('div');
-  backdropContainer.id = 'backdrop';
-  backdropContainer.style.backgroundImage = `url(${backdrops[0]})`;
-  document.body.appendChild(backdropContainer);
-  // Verificar si hay suficientes imágenes de fondo para rotar
-  if (backdrops.length > 1) {rotateBackdrops(backdrops, 15); }
 }
 
 async function fetchMovieImages(movieId) {
@@ -244,6 +233,7 @@ async function fetchMovieImages(movieId) {
 }
 
 function rotateBackdrops(backdrops, duration) {
+  
   let index = 0;
   document.getElementById('backdrop').style.backgroundImage = `url(${backdrops[index]})`;
   setInterval(() => {
