@@ -176,7 +176,7 @@ async function displayMovieDetails(movieId) {
     movieDetails.images = await fetchMovieImages(movieId);
   }
   
-  const { poster_path: urlImg, backdrop_path: urlBackdrop, title, overview, runtime, genres, images } = movieDetails;
+  const { poster_path: urlImg, backdrop_path: urlBackdrop, title, overview, runtime, genres, images,logoUrl } = movieDetails;
 
   const genresNames = genres.map((genre) => genre.name).join(', ');
   const movieContainer = document.getElementById('movie-container');
@@ -195,6 +195,7 @@ async function displayMovieDetails(movieId) {
     
     // Esperar a que todas las imágenes se hayan cargado antes de mostrar el telón
     await Promise.all(backdropImages.map(img => img.decode()));
+
     
     movieContainer.innerHTML = `
         <div class="poster-container">
