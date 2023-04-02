@@ -133,9 +133,9 @@ async function displayMovie(movies, moreLinkListener = true) {
   movieContainer.innerHTML = moviesWithLogo
     .map(
       ({ poster_path: urlImg, title, id, overview, runtime, logoUrl }, _) => `
-      <article class="movie" data-movie-id="${id}">
+      <article class="movie" >
         <img src="${IMAGE_BASE_URL}w500${urlImg}" alt="${title}">
-        <div class="movie-info" >
+        <div class="movie-info" data-movie-id="${id}">
         ${logoUrl ? `<img class="movie-logo"src=${logoUrl}>` : `<h2>${title}</h2>`}
         <p class="overview">${overview.slice(0, 150)}...<span data-movie-id="${id}" class=${moreLinkListener ? 'more' : 'remove'}>Más</span></p>
         ${runtime ? `<p>Duración: ${runtime} minutos</p>` : ''}
@@ -147,16 +147,60 @@ async function displayMovie(movies, moreLinkListener = true) {
   if (moreLinkListener) {
     addMoreLinkListeners(movies);
   }
+  // Obtener todos los elementos .movie
+const moviess = document.querySelectorAll('.movie');
 
-  // Mueve este bloque de código dentro de la función displayMovie
-  const movieElements = document.querySelectorAll('.movie');
-  movieElements.forEach((movieElement) => {
-    movieElement.addEventListener('click', function () {
+// Iterar sobre cada elemento .movie y agregar el evento
+moviess.forEach((movie) => {
+  // Verificar si el dispositivo es móvil
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    let clickedOnce = false;
+    // Agregar evento de clic en el elemento .movie
+    movie.addEventListener('click', function () {
+      const movieInfo = this.querySelector('.movie-info');
+      // Verificar si el elemento .movie-info no está visible
+      if (movieInfo.style.display !== "flex")  {
+        // Mostrar el elemento .movie-info
+          movieInfo.style.display = 'flex';
+          movieInfo.style.position = 'absolute';
+          movieInfo.style.width = '100%';
+          movieInfo.style.flexDirection = 'column';
+          movieInfo.style.zIndex = '1';
+          clickedOnce = true;
+      } else {
+        // Redirigir a la página de detalles de la película
+        const movieId = movieInfo.dataset.movieId;
+        const url = `movie.html?id=${movieId}`;
+        window.location.href = url;
+      }
+    });
+  } else {
+    // Agregar evento de clic en el elemento .movie-info
+    const movieInfo = movie.querySelector('.movie-info');
+    movieInfo.addEventListener('click', function () {
       const movieId = this.dataset.movieId;
       const url = `movie.html?id=${movieId}`;
       window.location.href = url;
     });
-  });
+  }
+  // ocul el movie-info cuando se hace click por fuera de la movie
+  // if (isMobile) { 
+  //   // Agregar evento de clic en el documento
+  //   document.addEventListener('click', function (event) {
+  //     const clickedElement = event.target;
+  //     const isDescendantOfMovieInfo = clickedElement.closest('.movie-info');
+  //     if (!isDescendantOfMovieInfo) {
+  //       // Ocultar todos los elementos .movie-info
+  //       const movieInfos = document.querySelectorAll('.movie-info');
+  //       movieInfos.forEach(function (movieInfo) {
+  //         movieInfo.style.display = 'none';
+  //       });
+  //     }
+  //   });
+  // }
+});
 }
 
 //consume los datos de la pelicula selecionada
@@ -185,6 +229,8 @@ async function displayMovieDetails(movieId) {
   if (images.backdrops || images.backdrops.length < 1) {
     // Arreglo de las primeras 5 imágenes de backdrop
     const backdrops = images.backdrops.slice(0, 5).map(backdrop => `${IMAGE_BASE_URL}original${backdrop.file_path}`);
+
+ 
     
     // Crear elementos de imagen ocultos para pre-cargar las imágenes de fondo
     const backdropImages = backdrops.map((url) => {
@@ -217,7 +263,6 @@ async function displayMovieDetails(movieId) {
     const backdropContainer = document.createElement('div');
     backdropContainer.id = 'backdrop';
     backdropContainer.style.backgroundImage = `url(${backdrops[0]})`;
- 
     document.body.appendChild(backdropContainer);
     // Verificar si hay suficientes imágenes de fondo para rotar
     rotateBackdrops(backdrops, 20); 
@@ -232,7 +277,6 @@ async function fetchMovieImages(movieId) {
 }
 
 function rotateBackdrops(backdrops, duration) {
-  
   let index = 0;
   document.getElementById('backdrop').style.backgroundImage = `url(${backdrops[index]})`;
   setInterval(() => {
