@@ -179,7 +179,7 @@ async function displayMovieDetails(movieId) {
   const { poster_path: urlImg, backdrop_path: urlBackdrop, title, overview, runtime, genres, images } = movieDetails;
 
   const genresNames = genres.map((genre) => genre.name).join(', ');
-  const movieContainer = document.getElementById('movie-telon');
+  const movieContainer = document.getElementById('movie-container');
 
   // Verificar la existencia de la propiedad 'backdrops' en 'images'
   if (images.backdrops || images.backdrops.length < 1) {
@@ -197,14 +197,13 @@ async function displayMovieDetails(movieId) {
     await Promise.all(backdropImages.map(img => img.decode()));
     
     movieContainer.innerHTML = `
-      <div class="movie-container">
         <div class="poster-container">
           <picture>
             <source srcset="${IMAGE_BASE_URL}w500${urlImg}" alt="${title}" media="(max-width:768px)"></source>
             <img class="imgPoster" src="${IMAGE_BASE_URL}original${urlImg}" alt="${title}">
           </picture>
         </div>
-        <div class="metadata-container">
+        <div class="metadato-container">
           <h1>${title}</h1>
           <section>
             <p>${overview}</p>
@@ -212,7 +211,6 @@ async function displayMovieDetails(movieId) {
             <p>Géneros: ${genresNames}</p>
           </section>
         </div>
-      </div>
     `;
     
     const backdropContainer = document.createElement('div');
