@@ -71,7 +71,7 @@ body{
     min-height: 456.28px; 
     max-width: 1200px;
     max-height: auto;
-    background-color: rgba(0, 0, 0, 0.527);
+    background-color: rgba(0, 0, 0, 0.678);
     border-radius: .3125rem;
     color: #fff;
     grid-area: metadato-container;
@@ -97,6 +97,14 @@ p:last-of-type {
     margin-bottom: 0;
 }
 
+.movie-logo{
+    justify-self: center;
+    height: 12.5rem;
+    width: 100%;
+    object-fit: contain;
+     
+}
+
 #movie-container {
     justify-self: center;
     text-align: center;
@@ -108,7 +116,6 @@ p:last-of-type {
                 "metadato-container"  auto/
                     100%;
 }
-
 
 
 @media (min-width: 600px) {

@@ -1,6 +1,7 @@
 const API_KEY = '6511c938195c56067e1386df779c2be0';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
+const language = navigator.language;// Obtener el idioma del navegador
 
 const homeButton = document.getElementById('home');
 const recommendedButton = document.getElementById('top_rated');
@@ -24,10 +25,10 @@ let currentPage;
 let totalPages;
 let currentEndpoint;
 let isLoading;
-
 //---carruzel---//
 async function fetchHighestRatedMovies(section) {
-  const response = await fetch(`${BASE_URL}/${section}?api_key=${API_KEY}&language=es-ES&page=1`);
+  
+  const response = await fetch(`${BASE_URL}/${section}?api_key=${API_KEY}&language=${language}&page=1`);
   const data = await response.json();
   const movies = data.results;
   console.log("recomendadas", movies);
@@ -69,8 +70,8 @@ async function fetchMoreMovies(endpoint) {
 
   isLoading = true;
   currentPage++;
-
-  const response = await fetch(`${BASE_URL}/${endpoint}?api_key=${API_KEY}&language=es-ES&page=${currentPage}`);
+  const language = navigator.language;// Obtener el idioma del navegador
+  const response = await fetch(`${BASE_URL}/${endpoint}?api_key=${API_KEY}&language=${language}&page=${currentPage}`);
   const data    	= await response.json();
 
   loaded_movies.push(...data.results);
@@ -94,7 +95,7 @@ async function fetchMovies(endpoint) {
   currentEndpoint = endpoint;
 	currentPage=1; //inicializar la página
 	
-	const response = await fetch(`${BASE_URL}/${endpoint}?api_key=${API_KEY}&language=es-ES&page=${currentPage}`);
+	const response = await fetch(`${BASE_URL}/${endpoint}?api_key=${API_KEY}&language=${language}&page=${currentPage}`);
 	const data  	  	  = await response.json();
 	totalPages=data.total_pages;
 	
@@ -106,28 +107,34 @@ async function fetchMovies(endpoint) {
 
 async function searchMovies(query) {
   if (query.length > 2) {
-    const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=es-ES`);
+    const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=${language}`);
     const data    	= await response.json();
 
     displayMovie(data.results)
    }
  }
 
+
 async function fetchMovieLogo(movieId) {
-const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/images?api_key=${API_KEY}`);
-const data 	     			= await response.json();
-if (!Array.isArray(data.logos)) {
-return null;
+  const images = await fetchMovieImages(movieId);
+  console.log("logos español", images )
+  if (!Array.isArray(images.logos)) {
+    return null;
+  }
+  const logoImage = images.logos[0];
+  const w500LogoUrl = logoImage ? `${IMAGE_BASE_URL}w500${logoImage.file_path}` : null;
+  const originalLogoUrl = logoImage ? `${IMAGE_BASE_URL}original${logoImage.file_path}` : null;
+  return { w500LogoUrl, originalLogoUrl };
 }
-const logoImage 			= data.logos[0];
-return logoImage ? `${IMAGE_BASE_URL}w500${logoImage.file_path}` : null;
-}
+
+
 
 async function displayMovie(movies, moreLinkListener = true) {
   let moviesWithLogo = [];
   for (const movie of movies) {
     const logoUrl = await fetchMovieLogo(movie.id);
-    movie.logoUrl = logoUrl;
+    const w500LogoUrl = logoUrl.w500LogoUrl;
+    movie.logoUrl =  w500LogoUrl;
     moviesWithLogo.push({ ...movie });
   }
   movieContainer.innerHTML = moviesWithLogo
@@ -148,12 +155,12 @@ async function displayMovie(movies, moreLinkListener = true) {
     addMoreLinkListeners(movies);
   }
   // Obtener todos los elementos .movie
-const moviess = document.querySelectorAll('.movie');
+  const moviess = document.querySelectorAll('.movie');
 
-// Iterar sobre cada elemento .movie y agregar el evento
-moviess.forEach((movie) => {
-  // Verificar si el dispositivo es móvil
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  // Iterar sobre cada elemento .movie y agregar el evento
+  moviess.forEach((movie) => {
+    // Verificar si el dispositivo es móvil
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   if (isMobile) {
     let clickedOnce = false;
@@ -185,6 +192,7 @@ moviess.forEach((movie) => {
       window.location.href = url;
     });
   }
+  
   // ocul el movie-info cuando se hace click por fuera de la movie
   // if (isMobile) { 
   //   // Agregar evento de clic en el documento
@@ -205,9 +213,9 @@ moviess.forEach((movie) => {
 
 //consume los datos de la pelicula selecionada
 async function fetchMovieDetails(movieId) {
-  const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=es-AR`);
+  const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=${language}`);
   const data = await response.json();
-  console.log(data)
+  //console.log(data)
   return data;
 }
 //recore los datos de la pelicula y los muestra en el html
@@ -239,11 +247,17 @@ async function displayMovieDetails(movieId) {
       return img;
     });
     
+    const logoUrl = await fetchMovieLogo(movieId);//llamado a la fetchMovieLogo() logo y le damos el id de la movie 
+    const originalLogoUrl = logoUrl.originalLogoUrl;
+    const w500LogoUrl = logoUrl.w500LogoUrl;
+    console.log("logo", originalLogoUrl) 
+    console.log("logo", w500LogoUrl) 
+    
     // Esperar a que todas las imágenes se hayan cargado antes de mostrar el telón
     await Promise.all(backdropImages.map(img => img.decode()));
+   
 
-    
-    movieContainer.innerHTML = `
+    movieContainer.innerHTML =  `
         <div class="poster-container">
           <picture>
             <source srcset="${IMAGE_BASE_URL}w500${urlImg}" alt="${title}" media="(max-width:768px)"></source>
@@ -251,6 +265,10 @@ async function displayMovieDetails(movieId) {
           </picture>
         </div>
         <div class="metadato-container">
+          <picture>
+            <source class="movie-logo" srcset="${w500LogoUrl}"  media="(max-width:768px)"></source>
+            <img class="movie-logo" src=${originalLogoUrl}> 
+          </picture>
           <h1>${title}</h1>
           <section>
             <p>${overview}</p>
@@ -273,8 +291,59 @@ async function fetchMovieImages(movieId) {
   const url = `${BASE_URL}/movie/${movieId}/images?api_key=${API_KEY}`;
   const response = await fetch(url);
   const data = await response.json();
-  return data;
+
+  const images = {
+    backdrops: data.backdrops,
+    logos: data.logos,
+    posters: data.posters
+  };
+  
+  const spanishImages = {
+    backdrops: [],
+    logos: [],
+    posters: []
+  };
+  
+  // Busca imágenes en el lenguaje que que tiene el navegador
+  for (let type in images) {
+    const language = navigator.language.slice(0, 2);// Obtener el idioma del navegador
+    console.log("navegador lenguaje", language)
+    for (let i = 0; i < images[type].length; i++) {
+      if (images[type][i].iso_639_1 === language) { //verifica si existe el tipo de imagen en ese idioma
+        spanishImages[type].push(images[type][i]);
+      }
+    }
+    for (let i = 0; i < images[type].length; i++) { //si no busca imágenes en ingles
+      if (images[type][i].iso_639_1 === "en") {
+        spanishImages[type].push(images[type][i]);
+      }
+    }
+  }
+  
+  // Si hay imágenes en español, devuelve esas,si no , devuelve en inglés de lo contrario devuelve pordefecto
+  for (let type in spanishImages) {
+    if (spanishImages[type].length > 0) {
+      images[type] = spanishImages[type];
+    }
+  }
+  return images;
 }
+
+// async function fetchMovieImages(movieId) {
+//   const url = `${BASE_URL}/movie/${movieId}/images?api_key=${API_KEY}`;
+//   const response = await fetch(url);
+//   const data = await response.json();
+//   return data;
+// }
+
+// async function fetchMovieImages(movieId) {
+//   const language = navigator.language || navigator.userLanguage; // Obtener el idioma del navegador
+//   console.log("lenguaje", language)
+//   const url = `${BASE_URL}/movie/${movieId}/images?api_key=${API_KEY}&language=en`;
+//   const response = await fetch(url);
+//   const data = await response.json();
+//   return data;
+// }
 
 function rotateBackdrops(backdrops, duration) {
   let index = 0;
