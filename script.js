@@ -16,6 +16,36 @@ popularButton.addEventListener("click", () => fetchMovies("movie/popular"));
 upcomingButton.addEventListener("click", () => fetchMovies("movie/upcoming"));
 
 
+//animacion de carga
+
+function showLoader() {
+  const loader = document.createElement('div');
+  loader.classList.add('loader');
+  document.body.appendChild(loader);
+}
+
+function hideLoader() {
+  const loader = document.querySelector('.loader');
+  if (loader) {
+    loader.remove();
+  }
+}
+
+
+
+// control de cambio de modo
+const switchInput = document.querySelector('.switch input');
+const modoEstiloLink = document.querySelector('#modo-estilo');
+
+switchInput.addEventListener('change', function() {
+  if (this.checked) {
+    modoEstiloLink.disabled = false;
+  } else {
+    modoEstiloLink.disabled = true;
+  }
+});
+
+
 //----variables----//
 searchInput.addEventListener("input", (event) =>
   searchMovies(event.target.value)
@@ -81,6 +111,7 @@ async function fetchMoreMovies(endpoint) {
 }
 
 window.addEventListener("scroll", () => {
+  showLoader()
 	const isAtBottom=
     window.innerHeight + window.scrollY 
     >= document.body.offsetHeight;
@@ -88,9 +119,11 @@ window.addEventListener("scroll", () => {
 	if (isAtBottom){
 		fetchMoreMovies(currentEndpoint);
     }
+  hideLoader()
 });
 
 async function fetchMovies(endpoint) {
+ 
   isLoading = true;
   currentEndpoint = endpoint;
 	currentPage=1; //inicializar la página
@@ -103,13 +136,13 @@ async function fetchMovies(endpoint) {
 	displayMovie( loaded_movies )
 
 	isLoading=false; 
+ 
 }
 
 async function searchMovies(query) {
   if (query.length > 2) {
     const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=${language}`);
     const data    	= await response.json();
-
     displayMovie(data.results)
    }
  }
@@ -130,6 +163,7 @@ async function fetchMovieLogo(movieId) {
 
 
 async function displayMovie(movies, moreLinkListener = true) {
+  showLoader(); // Muestra la animación de carga
   let moviesWithLogo = [];
   for (const movie of movies) {
     const logoUrl = await fetchMovieLogo(movie.id);
@@ -179,6 +213,7 @@ async function displayMovie(movies, moreLinkListener = true) {
       } else {
         // Redirigir a la página de detalles de la película
         const movieId = movieInfo.dataset.movieId;
+        
         const url = `movie.html?id=${movieId}`;
         window.location.href = url;
       }
@@ -192,36 +227,27 @@ async function displayMovie(movies, moreLinkListener = true) {
       window.location.href = url;
     });
   }
-  
-  // ocul el movie-info cuando se hace click por fuera de la movie
-  // if (isMobile) { 
-  //   // Agregar evento de clic en el documento
-  //   document.addEventListener('click', function (event) {
-  //     const clickedElement = event.target;
-  //     const isDescendantOfMovieInfo = clickedElement.closest('.movie-info');
-  //     if (!isDescendantOfMovieInfo) {
-  //       // Ocultar todos los elementos .movie-info
-  //       const movieInfos = document.querySelectorAll('.movie-info');
-  //       movieInfos.forEach(function (movieInfo) {
-  //         movieInfo.style.display = 'none';
-  //       });
-  //     }
-  //   });
-  // }
 });
+
+  hideLoader(); // Oculta la animación de carga
 }
 
 //consume los datos de la pelicula selecionada
 async function fetchMovieDetails(movieId) {
+  showLoader()
   const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=${language}`);
   const data = await response.json();
   //console.log(data)
+  hideLoader()
   return data;
 }
 //recore los datos de la pelicula y los muestra en el html
+
+
+
 async function displayMovieDetails(movieId) {
-  const movieDetails = await fetchMovieDetails(movieId);
   
+  const movieDetails = await fetchMovieDetails(movieId);
   // Verificar si se proporciona la propiedad 'images' en la respuesta de la API
   if (!movieDetails.images) {
     // Si no se proporciona, hacer una llamada adicional a la API para obtener las imágenes
@@ -235,6 +261,7 @@ async function displayMovieDetails(movieId) {
 
   // Verificar la existencia de la propiedad 'backdrops' en 'images'
   if (images.backdrops || images.backdrops.length < 1) {
+    showLoader()
     // Arreglo de las primeras 5 imágenes de backdrop
     const backdrops = images.backdrops.slice(0, 5).map(backdrop => `${IMAGE_BASE_URL}original${backdrop.file_path}`);
 
@@ -258,24 +285,24 @@ async function displayMovieDetails(movieId) {
    
 
     movieContainer.innerHTML =  `
-        <div class="poster-container">
-          <picture>
-            <source srcset="${IMAGE_BASE_URL}w500${urlImg}" alt="${title}" media="(max-width:768px)"></source>
-            <img class="imgPoster" src="${IMAGE_BASE_URL}original${urlImg}" alt="${title}">
-          </picture>
-        </div>
-        <div class="metadato-container">
-          <picture>
-            <source class="movie-logo" srcset="${w500LogoUrl}"  media="(max-width:768px)"></source>
-            <img class="movie-logo" src=${originalLogoUrl}> 
-          </picture>
-          <h1>${title}</h1>
-          <section>
-            <p>${overview}</p>
-            <p>Duración: ${runtime} minutos</p>
-            <p>Géneros: ${genresNames}</p>
-          </section>
-        </div>
+    <div class="poster-container">
+      <picture>
+        <source srcset="${IMAGE_BASE_URL}w500${urlImg}" alt="${title}" media="(max-width:768px)"></source>
+        <img class="imgPoster" src="${IMAGE_BASE_URL}original${urlImg}" alt="${title}">
+      </picture>
+    </div>
+    <div class="metadato-container">
+      <picture>
+        <source class="movie-logo" srcset="${w500LogoUrl}"  media="(max-width:768px)"></source>
+        <img class="movie-logo" src=${originalLogoUrl}> 
+      </picture>
+      <h1>${title}</h1>
+      <section>
+        <p>${overview}</p>
+        <p>Duración: ${Math.floor(runtime / 60)}h ${runtime % 60}min</p>
+        <p>Géneros: ${genresNames}</p>
+      </section>
+    </div>
     `;
     
     const backdropContainer = document.createElement('div');
@@ -284,10 +311,13 @@ async function displayMovieDetails(movieId) {
     document.body.appendChild(backdropContainer);
     // Verificar si hay suficientes imágenes de fondo para rotar
     rotateBackdrops(backdrops, 20); 
+    
   }
+  hideLoader() //cierra la animacion de carga
 }
 
 async function fetchMovieImages(movieId) {
+
   const url = `${BASE_URL}/movie/${movieId}/images?api_key=${API_KEY}`;
   const response = await fetch(url);
   const data = await response.json();
@@ -303,9 +333,9 @@ async function fetchMovieImages(movieId) {
     logos: [],
     posters: []
   };
-  
   // Busca imágenes en el lenguaje que que tiene el navegador
   for (let type in images) {
+   
     const language = navigator.language.slice(0, 2);// Obtener el idioma del navegador
     console.log("navegador lenguaje", language)
     for (let i = 0; i < images[type].length; i++) {
@@ -326,6 +356,7 @@ async function fetchMovieImages(movieId) {
       images[type] = spanishImages[type];
     }
   }
+ 
   return images;
 }
 
@@ -381,3 +412,4 @@ link.addEventListener('click', showFullOverview);
 }
 
 fetchMovies('trending/movie/week');
+
