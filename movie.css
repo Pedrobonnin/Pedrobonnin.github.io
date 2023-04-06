@@ -121,7 +121,7 @@ iframe{
 
 .metadato-container {
     font-size: 1em;
-    padding: 1.875em;
+    padding: .625rem;
     min-width: 100%;
     min-height: 456.28px; 
     max-width: 1200px;
@@ -142,7 +142,9 @@ h2{
 p {
     line-height: 1.5;
     padding: .625rem;
-    
+    text-align: justify;
+    text-justify: inter-word;
+  
 }
 
 p:first-of-type {
@@ -163,7 +165,6 @@ p:last-of-type {
 
 #movie-container {
     justify-self: center;
-    text-align: center;
     padding: 20px;
     display: grid;
     margin: 20px;
@@ -347,6 +348,7 @@ body{
 
 .metadato-container{
     transition: 0s;
+    padding: 1.875em;
 }
 
 .poster-container {
