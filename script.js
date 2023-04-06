@@ -16,6 +16,7 @@ popularButton.addEventListener("click", () => fetchMovies("movie/popular"));
 upcomingButton.addEventListener("click", () => fetchMovies("movie/upcoming"));
 
 
+
 //animacion de carga
 
 function showLoader() {
@@ -213,7 +214,6 @@ async function displayMovie(movies, moreLinkListener = true) {
       } else {
         // Redirigir a la página de detalles de la película
         const movieId = movieInfo.dataset.movieId;
-        
         const url = `movie.html?id=${movieId}`;
         window.location.href = url;
       }
@@ -241,12 +241,34 @@ async function fetchMovieDetails(movieId) {
   hideLoader()
   return data;
 }
+
+//consumelos videos de las pelicluas
+async function fetchMovieVideos(movieId) {
+  const url = `${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}&language=${language}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  return data.results;
+}
+
 //recore los datos de la pelicula y los muestra en el html
-
-
-
 async function displayMovieDetails(movieId) {
+
+  const videos = await fetchMovieVideos(movieId);
+
+  // Buscar el primer video de tipo "Trailer"
+  const trailerVideo = videos.find(video => video.type === "Trailer");
+  // Obtener la URL del video de tipo "Trailer" o del primer video si no hay videos de tipo "Trailer"
+  const videoUrl = trailerVideo ? trailerVideo.key : videos[0].key;
+
   
+  // Construye la URL completa del video de YouTube
+  const videoFullUrl = `https://www.youtube.com/embed/${videoUrl}?autoplay=1`;
+  console.log("url triler", videoFullUrl)
+  // Actualiza el atributo 'src' del elemento 'video'
+ 
+  // Ahora puedes usar los datos de los videos en tu código
+  console.log("lista de videos", videos);
+    
   const movieDetails = await fetchMovieDetails(movieId);
   // Verificar si se proporciona la propiedad 'images' en la respuesta de la API
   if (!movieDetails.images) {
@@ -254,10 +276,11 @@ async function displayMovieDetails(movieId) {
     movieDetails.images = await fetchMovieImages(movieId);
   }
   
-  const { poster_path: urlImg, backdrop_path: urlBackdrop, title, overview, runtime, genres, images,logoUrl } = movieDetails;
+  const { poster_path: urlImg, backdrop_path: urlBackdrop, title, overview, runtime, genres, images} = movieDetails;
 
   const genresNames = genres.map((genre) => genre.name).join(', ');
   const movieContainer = document.getElementById('movie-container');
+  
 
   // Verificar la existencia de la propiedad 'backdrops' en 'images'
   if (images.backdrops || images.backdrops.length < 1) {
@@ -283,7 +306,6 @@ async function displayMovieDetails(movieId) {
     // Esperar a que todas las imágenes se hayan cargado antes de mostrar el telón
     await Promise.all(backdropImages.map(img => img.decode()));
    
-
     movieContainer.innerHTML =  `
     <div class="poster-container">
       <picture>
@@ -293,18 +315,83 @@ async function displayMovieDetails(movieId) {
     </div>
     <div class="metadato-container">
       <picture>
-        <source class="movie-logo" srcset="${w500LogoUrl}"  media="(max-width:768px)"></source>
-        <img class="movie-logo" src=${originalLogoUrl}> 
+        <source class="movie-logo" srcset="${w500LogoUrl}" alt="${title}"  media="(max-width:768px)"></source>
+        <img class="movie-logo" src=${originalLogoUrl} alt="${title}"> 
       </picture>
-      <h1>${title}</h1>
+      <h2>${title}</h2>
       <section>
         <p>${overview}</p>
+        <div class="wrapper">
+          <button  id="trailer-boton">Trailer 
+            <svg fill="#fff" width="800px" height="800px" viewBox="0 0 1069 1069" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:serif="http://www.serif.com/" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <rect height="1066.67" id="Video-player" style="fill:none;" width="1066.67" x="1.515" y="0.143"/>
+              <g>
+              <path d="M653.802,660.183c9.682,-5.579 15.648,-15.903 15.648,-27.077c0,-11.174 -5.966,-21.498 -15.648,-27.077c-0,0 -207.519,-119.571 -207.519,-119.571c-9.669,-5.571 -21.576,-5.563 -31.238,0.021c-9.662,5.584 -15.613,15.897 -15.613,27.056c-0,0 -0,239.142 -0,239.142c-0,11.159 5.951,21.472 15.613,27.056c9.662,5.584 21.569,5.592 31.238,0.021c0,-0 207.519,-119.571 207.519,-119.571Zm-78.196,-27.077l-113.674,65.498c-0,0.001 -0,-130.996 -0,-130.996l113.674,65.498Z" style="fill-opacity:0.5;"/>
+              <path d="M45.265,325.143l-0,458.333c-0,52.49 20.852,102.831 57.968,139.948c37.117,37.117 87.458,57.969 139.949,57.969c165.508,-0 417.825,-0 583.333,-0c52.491,-0 102.832,-20.852 139.948,-57.969c37.117,-37.117 57.969,-87.458 57.969,-139.948l-0,-458.333c-0,-52.49 -20.852,-102.831 -57.969,-139.948c-37.116,-37.117 -87.457,-57.969 -139.948,-57.969c-165.508,0 -417.825,0 -583.333,0c-52.491,0 -102.832,20.852 -139.949,57.969c-37.116,37.117 -57.968,87.458 -57.968,139.948Zm62.5,56.213l-0,402.12c-0,35.915 14.267,70.358 39.662,95.754c25.396,25.396 59.84,39.663 95.755,39.663c165.508,-0 417.825,-0 583.333,-0c35.915,-0 70.359,-14.267 95.754,-39.663c25.396,-25.396 39.663,-59.839 39.663,-95.754l-0,-458.333c-0,-35.915 -14.267,-70.358 -39.663,-95.754c-25.395,-25.396 -59.839,-39.663 -95.754,-39.663c-165.508,0 -417.825,0 -583.333,0c-35.915,0 -70.359,14.267 -95.755,39.663c-23.909,23.91 -37.955,55.84 -39.516,89.467l676.937,0c17.248,0 31.25,14.003 31.25,31.25c0,17.248 -14.002,31.25 -31.25,31.25l-677.083,0Zm123.177,-160.38c18.253,0 33.073,14.82 33.073,33.073c-0,18.254 -14.82,33.074 -33.073,33.074c-18.254,-0 -33.074,-14.82 -33.074,-33.074c0,-18.253 14.82,-33.073 33.074,-33.073Zm104.166,0c18.254,0 33.074,14.82 33.074,33.073c-0,18.254 -14.82,33.074 -33.074,33.074c-18.253,-0 -33.073,-14.82 -33.073,-33.074c0,-18.253 14.82,-33.073 33.073,-33.073Zm104.167,0c18.254,0 33.073,14.82 33.073,33.073c0,18.254 -14.819,33.074 -33.073,33.074c-18.254,-0 -33.073,-14.82 -33.073,-33.074c-0,-18.253 14.819,-33.073 33.073,-33.073Z"/>
+              </g>
+            </svg>
+          </button>
+        </div>
         <p>Duración: ${Math.floor(runtime / 60)}h ${runtime % 60}min</p>
         <p>Géneros: ${genresNames}</p>
       </section>
     </div>
     `;
+
+    const trailerContainer = document.getElementById('trailer-container');
     
+    
+    trailerContainer.innerHTML =  `
+        <iframe id="trailer-iframe" class="oculto" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+      `;
+
+    const overlay = document.getElementById('overlay');
+    const botonTrailer = document.getElementById("trailer-boton");
+    const marco = document.getElementById("trailer-iframe");
+   
+    botonTrailer.addEventListener("click", function(event) {
+      marco.setAttribute("src", videoFullUrl);  
+      marco.classList.remove("oculto"); // Muestra el trailer
+      trailerContainer.classList.remove("oculto"); // Muestra el trailer
+      botonTrailer.querySelector("svg").setAttribute("fill", "#ff0000"); // Cambia el color del SVG al hacer clic
+      overlay.classList.remove("oculto"); // oscurece la pantalla
+      trailerContainer.style.display = "block"
+    });
+
+
+    document.addEventListener("click", function(event) { // Oculta el trailer
+      // Verifica que el clic no haya sido en el botón ni en el marco
+      if (event.target !== marco && event.target !== botonTrailer && !marco.contains(event.target)) {
+        marco.removeAttribute("src");
+        marco.classList.add("oculto");
+        trailerContainer.classList.add("oculto");
+        botonTrailer.querySelector("svg").setAttribute("fill", "#fff"); // Cambia el color del SVG al hacer clic
+        overlay.classList.add("oculto");
+        trailerContainer.style.display = "none"
+      }
+    });
+
+    
+
+
+    
+    //--
+    // const botonTrailer = document.getElementById("trailer-boton");
+    // const marco = document.getElementById("trailer-iframe");
+    
+    // botonTrailer.addEventListener("click", function() {
+    //   marco.classList.remove("oculto"); // Muestra el trailer
+    // });
+    
+    // document.addEventListener("click", function(event) { // Oculta el trailer
+    //   // Verifica que el clic no haya sido en el botón ni en el marco
+    //   if (event.target !== marco && event.target !== botonTrailer && !marco.contentWindow.document.contains(event.target)) {
+    //     marco.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+    //     marco.classList.add("oculto");
+    //   }
+    // });
+
+   
     const backdropContainer = document.createElement('div');
     backdropContainer.id = 'backdrop';
     backdropContainer.style.backgroundImage = `url(${backdrops[0]})`;
@@ -410,6 +497,9 @@ link.addEventListener('click', showFullOverview);
     }
   }
 }
+
+
+
 
 fetchMovies('trending/movie/week');
 

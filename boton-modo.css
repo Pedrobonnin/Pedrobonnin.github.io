@@ -3,7 +3,6 @@
 
 .switch {
   margin: 5px;
-  
   font-size: 1.0625rem;
   filter: drop-shadow(.3125rem .3125rem .625rem rgba(0, 0, 0, 0.829));
   display: inline-block;
